@@ -267,5 +267,4 @@ classDiagram
     DatabaseManager "1" *-- "0..*" Calculation
     TaskSchedulerView "1" *-- "1" VisualizationManager
     TreeVisualizer "1" *-- "1" VisualizationManager
-    ViewNode "1" *-- "0..*" ViewNode
 ```
