@@ -1,7 +1,7 @@
 [project]
 name = "computational-ops"
 version = "0.1.0"
-description = "Add your description here"
+description = "企業グレードの計算ワークフロー管理システム"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
@@ -13,6 +13,10 @@ dependencies = [
 dev-dependencies = [
     "pytest==7.2.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.mypy]
 files = [
@@ -137,4 +141,3 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 testpaths = ["tests"]
-addopts = "--cov=./src --cov-report xml"
