@@ -1,4 +1,4 @@
-# 開発用諸図
+# 開発用諸図 （最終段階）
 
 ## Class Diagram
 
@@ -28,6 +28,12 @@ classDiagram
         +update_calculation(calc) None
         +get_calculation(calc_id) Calculation
         -_init_db() None
+    }
+
+    class RunnerInterface {
+        <<abstract>>
+        +submit_job(input_file: str) -> Result~str, str~
+        +get_status(id: str) -> Result~Status, str~
     }
 
     class LSFInterface {

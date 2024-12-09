@@ -2,7 +2,11 @@
 
 ## Overview
 
-ComputationalOps is an enterprise-grade computational workflow management system designed for high-performance computing environments. It provides robust job management, dependency tracking, and visualization capabilities while maintaining strict security standards for internal use.
+- ComputationalOps is an enterprise-grade computational workflow management system designed for high-performance computing (HPC) environments. It provides robust job management, dependency tracking, and visualization capabilities while maintaining strict security standards for internal use.
+
+- It applies the pipeline management, version management, and visualization features established in DevOps and MLOps to HPC environments.
+   1. HPC job delivery
+   2. Process driven optimization
 
 ## Core Features
 
