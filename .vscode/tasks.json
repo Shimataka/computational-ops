@@ -15,36 +15,6 @@
             }
         },
         {
-            "label": "py-ruff",
-            "type": "shell",
-            "command": "~/.cargo/bin/uvx",
-            "args": [
-                "ruff",
-                "check",
-                "${workspaceFolder}/src"
-            ],
-            "hide": true,
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
-        },
-        {
-            "label": "py-mypy",
-            "type": "shell",
-            "command": "~/.cargo/bin/uvx",
-            "args": [
-                "mypy",
-                "--config-file=${workspaceFolder}/pyproject.toml"
-            ],
-            "hide": true,
-            "options": {
-                "cwd": "${workspaceFolder}",
-                "env": {
-                    "PYTHONPATH": "${workspaceFolder}/.venv/bin/python"
-                }
-            }
-        },
-        {
             "label": "py-pytest",
             "type": "shell",
             "command": "~/.cargo/bin/uv",
@@ -59,70 +29,11 @@
                 "env": {
                     "PYTHONPATH": "${workspaceFolder}/.venv/bin/python"
                 }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
-        },
-        {
-            "label": "py-code-check",
-            "type": "shell",
-            "command": "echo code check",
-            "dependsOrder": "parallel",
-            "dependsOn": [
-                "py-ruff",
-                "py-mypy",
-                "py-pytest"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "py-sphinx-apidoc",
-            "type": "shell",
-            "command": "~/.cargo/bin/uv",
-            "args": [
-                "run",
-                "sphinx-apidoc",
-                "-f",
-                "-o",
-                "${workspaceFolder}/docs/source",
-                "${workspaceFolder}/src/${workspaceFolderBasename}/"
-            ],
-            "hide": true
-        },
-        {
-            "label": "py-sphinx-make",
-            "type": "shell",
-            "command": "make",
-            "args": [
-                "html"
-            ],
-            "hide": true,
-            "options": {
-                "cwd": "${workspaceFolder}/docs",
-                "env": {
-                    "SPHINXBUILD": "${workspaceFolder}/.venv/bin/sphinx-build"
-                }
-            }
-        },
-        {
-            "label": "py-docs-gen",
-            "type": "shell",
-            "command": "echo build docs",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "py-sphinx-apidoc",
-                "py-sphinx-make"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "py-pre-commit",
-            "type": "shell",
-            "command": "echo pre-commit",
-            "group": "build",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "py-linting",
-                "py-docs"
-            ]
         }
     ]
 }
