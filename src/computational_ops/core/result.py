@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import wraps
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, ParamSpec, TypeVar
 
 T = TypeVar("T")  # 成功時の型
 E = TypeVar("E")  # エラー時の型
 R = TypeVar("R")  # 戻り値の型
+P = ParamSpec("P")  # パラメータの型
 
 
 class Result(Generic[T, E], ABC):
@@ -83,7 +84,7 @@ class Result(Generic[T, E], ABC):
         """
 
 
-@dataclass
+@dataclass(match_args=True, slots=True)
 class Ok(Result[T, E]):
     """成功を表すクラス。
 
@@ -124,10 +125,12 @@ class Ok(Result[T, E]):
         """エラー値を取り出す。
 
         Raises:
-            ValueError: 常に発生 (Okに対して呼び出されるため)
+            UnwrapError: 常に発生 (Okに対して呼び出されるため)
         """
+        if isinstance(self.value, Exception):
+            raise UnwrapError(self, str(self.value)) from BaseException
         msg = f"Called unwrap_err on an Ok value: {self.value}"
-        raise ValueError(msg)
+        raise UnwrapError(self, msg)
 
     def map(self, func: Callable[[T], R]) -> "Result[R, E]":
         """成功値に関数を適用する。
@@ -141,7 +144,7 @@ class Ok(Result[T, E]):
         return Ok(func(self.value))
 
 
-@dataclass
+@dataclass(match_args=True, slots=True)
 class Err(Result[T, E]):
     """エラーを表すクラス。
 
@@ -163,10 +166,12 @@ class Err(Result[T, E]):
         """成功値を取り出す。
 
         Raises:
-            ValueError: 常に発生 (Errに対して呼び出されるため)
+            UnwrapError: 常に発生 (Errに対して呼び出されるため)
         """
+        if isinstance(self.error, Exception):
+            raise UnwrapError(self, str(self.error)) from BaseException
         msg = f"Called unwrap on an Err value: {self.error}"
-        raise ValueError(msg)
+        raise UnwrapError(self, msg)
 
     def unwrap_or(self, default: T) -> T:
         """成功値を取り出すか、失敗時はデフォルト値を返す。
@@ -199,6 +204,18 @@ class Err(Result[T, E]):
         return Err(self.error)
 
 
+class UnwrapError(Exception):
+    """ハテナ演算子の実装のために使用する例外。
+
+    Attributes:
+        result (Result[T, E]): エラー時のResult
+    """
+
+    def __init__(self, result: Result[Any, Any], message: str) -> None:
+        self.result: Result[Any, Any] = result
+        super().__init__(message)
+
+
 def result(func: Callable[..., Result[T, E]]) -> Callable[..., Result[T, E]]:
     """ハテナ演算子の機能を実現するデコレータ。
 
@@ -216,24 +233,13 @@ def result(func: Callable[..., Result[T, E]]) -> Callable[..., Result[T, E]]:
     """
 
     @wraps(func)
-    def wrapper(*args: Any, **kwargs: Any) -> Result[T, E]:  # noqa: ANN401
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Result[T, E]:
         try:
             return func(*args, **kwargs)
-        except UnwrapError[T, E] as e:
+        except UnwrapError as e:
             return e.result
 
     return wrapper
-
-
-class UnwrapError(Exception, Generic[T, E]):
-    """ハテナ演算子の実装のために使用する例外。
-
-    Attributes:
-        result (Result[T, E]): エラー時のResult
-    """
-
-    def __init__(self, result: Result[T, E]) -> None:
-        self.result: Result[T, E] = result
 
 
 def question(result: Result[T, E]) -> T:
@@ -252,8 +258,8 @@ def question(result: Result[T, E]) -> T:
     """
     if isinstance(result, Ok):
         return result.value
-    raise UnwrapError(result)
+    raise UnwrapError(result, "result is Err")
 
 
 # エイリアスとしてクエスチョンマークも定義
-q = question
+# q = question
