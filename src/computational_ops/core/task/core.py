@@ -27,24 +27,36 @@ class Task(ABC):
         Result[TaskOutput, str]: The result of the task.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, from_yaml: Instruction) -> None:
         """Initialize the task.
 
         Args:
             name (str): The name of the task.
+            from_yaml (Instruction): The instruction to run the task.
         """
         self.name = name
+        validated = self.validate_yaml(from_yaml)
+        if validated.is_err():
+            raise TypeError(validated.unwrap_err())
+        self.from_yaml = validated.unwrap()
 
     @abstractmethod
-    async def run(
-        self,
-        from_yaml: Instruction,
-        from_pedecessor: TaskOutput,
-    ) -> Result[TaskOutput, str]:
-        """Run the task.
+    def validate_yaml(self, from_yaml: Instruction) -> Result[Instruction, str]:
+        """Check the yaml.
+
+        Returns:
+            Result[bool, str]: The result of the check.
 
         Args:
             from_yaml (Instruction): The instruction to run the task.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    async def run(self, from_pedecessor: TaskOutput) -> Result[TaskOutput, str]:
+        """Run the task.
+
+        Args:
             from_pedecessor (Task): The task that precedes this task.
 
         Returns:
