@@ -1,0 +1,15 @@
+# Check the order to be not sorted.
+Task2:
+  name: test_01_task_name
+  variable1: value1-1
+  variable2: value1-2
+
+Task1:
+  name: test_02_task_name
+  variable1: value2-1
+  variable2: value2-2
+
+Task3:
+  name: test_03_task_name
+  variable1: value3-1
+  variable2: value3-2
