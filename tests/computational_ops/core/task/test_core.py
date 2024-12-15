@@ -14,9 +14,11 @@ from computational_ops.core.task.core import Task, TaskOutput
 
 
 class TestTask1(Task):
+    def validate_yaml(self, from_yaml: Instruction) -> Result[Instruction, str]:
+        return Ok(from_yaml)
+
     async def run(
         self,
-        from_yaml: Instruction,  # noqa: ARG002
         from_pedecessor: TaskOutput,
     ) -> Result[TaskOutput, str]:
         data = from_pedecessor.data
@@ -25,9 +27,11 @@ class TestTask1(Task):
 
 
 class TestTask2(Task):
+    def validate_yaml(self, from_yaml: Instruction) -> Result[Instruction, str]:
+        return Ok(from_yaml)
+
     async def run(
         self,
-        from_yaml: Instruction,  # noqa: ARG002
         from_pedecessor: TaskOutput,
     ) -> Result[TaskOutput, str]:
         data = from_pedecessor.data
@@ -36,9 +40,11 @@ class TestTask2(Task):
 
 
 class TestTask3(Task):
+    def validate_yaml(self, from_yaml: Instruction) -> Result[Instruction, str]:
+        return Ok(from_yaml)
+
     async def run(
         self,
-        from_yaml: Instruction,  # noqa: ARG002
         from_pedecessor: TaskOutput,
     ) -> Result[TaskOutput, str]:
         data = from_pedecessor.data
@@ -49,13 +55,13 @@ class TestTask3(Task):
 class TestTask(unittest.IsolatedAsyncioTestCase):
     async def test_task(self) -> None:
         instruction = Instruction(task_name="", task_args={})
-        task_a = TestTask1(name="TaskA")
-        task_b = TestTask2(name="TaskB")
-        task_c = TestTask3(name="TaskC")
+        task_a = TestTask1(name="TaskA", from_yaml=instruction)
+        task_b = TestTask2(name="TaskB", from_yaml=instruction)
+        task_c = TestTask3(name="TaskC", from_yaml=instruction)
 
-        output = await task_a.run(instruction, TaskOutput(data={}))
-        output = await task_b.run(instruction, output.unwrap())
-        output = await task_c.run(instruction, output.unwrap())
+        output = await task_a.run(TaskOutput(data={}))
+        output = await task_b.run(output.unwrap())
+        output = await task_c.run(output.unwrap())
 
         assert output.unwrap().data == {
             "append_on_task1": "append_on_task1",
